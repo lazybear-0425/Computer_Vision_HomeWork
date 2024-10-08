@@ -5,7 +5,7 @@ import numpy as np
  
 def main(argv):
     
-    default_file = 'coin.jpg'
+    default_file = 'example/coin.jpg'
     filename = argv[0] if len(argv) > 0 else default_file
  
     # Loads an image
