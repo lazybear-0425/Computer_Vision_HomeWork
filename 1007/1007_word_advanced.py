@@ -42,12 +42,14 @@ while True:
     cv2.imshow('threshold', threshold)
 
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2, 3))
+    # kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (2, 3))
     ''' 因為是白底黑字，所以erode和dilate要相反操作! '''
     erode = cv2.erode(threshold, kernel)
     dilate = cv2.dilate(erode, kernel)
     cv2.imshow('open', dilate)
     ''' 用膨脹去變成連線 '''
     kernel_dil = cv2.getStructuringElement(cv2.MORPH_RECT, (11, 1))
+    kernel_dil = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (11, 4))
     erode_line = cv2.erode(dilate, kernel_dil)
     cv2.imshow('dilate', erode_line)
 
@@ -56,17 +58,17 @@ while True:
         break
 
 # 存檔
-try:
-    import os
-    import sys
-    sys.path.append(os.getcwd())
-    import mytools # from mytools.py
-    mytools.save_file('1007/result/hk1', 
-                      [['word-binary.png', threshold], 
-                       ['word-open.png', dilate], 
-                       ['word-dilate.png', erode_line]])
-except:
-    print('存檔失敗QQ')
+# try:
+#     import os
+#     import sys
+#     sys.path.append(os.getcwd())
+#     import mytools # from mytools.py
+#     mytools.save_file('1007/result/hk1', 
+#                       [['word-binary.png', threshold], 
+#                        ['word-open.png', dilate], 
+#                        ['word-dilate.png', erode_line]])
+# except:
+#     print('存檔失敗QQ')
 '''
 第一張 二質化
 去雜訊
