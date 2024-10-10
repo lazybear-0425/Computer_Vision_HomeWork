@@ -1,6 +1,6 @@
 import cv2 as cv2
 import numpy as np
-from matplotlib import pyplot as plt
+import os
  
 img = cv2.imread('1007/example/word.png', cv2.IMREAD_GRAYSCALE)
 
@@ -20,9 +20,18 @@ cv2.imshow('dilate', erode_line)
 
 cv2.waitKey(0) 
 
-cv2.imwrite('1007/result/hk1/word-binary.png', threshold)
-cv2.imwrite('1007/result/hk1/word-open.png', dilate)
-cv2.imwrite('1007/result/hk1/word-dilate.png', erode_line)
+# 存檔
+try:
+    import os
+    import sys
+    sys.path.append(os.getcwd())
+    import mytools # from mytools.py
+    mytools.save_file('1007/result/hk1', 
+                      [['word-binary.png', threshold], 
+                       ['word-open.png', dilate], 
+                       ['word-dilate.png', erode_line]])
+except:
+    print('存檔失敗QQ')
 '''
 第一張 二質化
 去雜訊

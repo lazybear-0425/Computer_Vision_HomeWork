@@ -17,6 +17,12 @@ cv2.imshow('canny', canny)
 cv2.imshow('result', dst)
 cv2.waitKey(0)
 
-cv2.imwrite('1007/result/hk2/T-canny.png', canny)
-cv2.imwrite('1007/result/hk2/T-result.png', dst)
- 
+# 存檔
+try:
+    import os
+    import sys
+    sys.path.append(os.getcwd())
+    import mytools # from mytools.py
+    mytools.save_file('1007/result/hk2', [['T-canny.png', canny], ['T-result.png', dst]])
+except:
+    print('存檔失敗QQ')

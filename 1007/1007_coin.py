@@ -1,57 +1,35 @@
 import sys
-import cv2 as cv
+import cv2
 import numpy as np
  
- 
-def main(argv):
-    
-    default_file = 'example/coin.jpg'
-    filename = argv[0] if len(argv) > 0 else default_file
- 
-    # Loads an image
-    src = cv.imread(cv.samples.findFile(filename), cv.IMREAD_COLOR)
- 
-    # Check if image is loaded fine
-    if src is None:
-        print ('Error opening image!')
-        print ('Usage: hough_circle.py [image_name -- default ' + default_file + '] \n')
-        return -1
-    
- 
-    
-    gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
-    
- 
-    
-    gray = cv.medianBlur(gray, 5)
-    
- 
-    
-    rows = gray.shape[0]
-    circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, rows / 8,
-                               param1=100, param2=30,
-                               minRadius=20, maxRadius=100)
-    
- 
-    
-    if circles is not None:
-        circles = np.uint16(np.around(circles))
-        for i in circles[0, :]:
-            center = (i[0], i[1])
-            # circle center
-            cv.circle(src, center, 1, (0, 100, 100), 3)
-            # circle outline
-            radius = i[2]
-            cv.circle(src, center, radius, (255, 0, 255), 3)
-    
- 
-    
-    cv.imshow("detected circles", src)
-    cv.waitKey(0)
-    
- 
-    return 0
- 
- 
-if __name__ == "__main__":
-    main(sys.argv[1:])
+img = cv2.imread('1007/example/coin.jpg', cv2.IMREAD_COLOR)
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+blur = cv2.medianBlur(gray, 5)
+
+rows = blur.shape[0]
+circles = cv2.HoughCircles(blur, cv2.HOUGH_GRADIENT, 1, rows / 8, 
+                           param1=100, param2=30, 
+                           minRadius=20, maxRadius=100)
+
+for circle in circles[0, :]: # circles.shape : (1, 10, 3)
+    circle = np.uint16(np.around(circle))
+    center = (circle[0], circle[1])
+    cv2.circle(img, center, 1, (0, 100, 200), 3)
+    radius = circle[2]
+    cv2.circle(img, center, radius, (255, 0, 255), 3)
+
+num_circle = circles.shape[1]
+text = f'number of circles: {num_circle}'
+cv2.putText(img, text, (img.shape[0] - 60, img.shape[1] - 145), cv2.FONT_HERSHEY_TRIPLEX, 0.5, (255, 100, 0), 1)
+
+cv2.imshow('circle', img)
+cv2.waitKey(0)
+
+# 存檔
+try:
+    import os
+    sys.path.append(os.getcwd())
+    import mytools # from mytools.py
+    mytools.save_file('1007/result/hk3', [['coin-circle.png', img]])
+except:
+    print('存檔失敗QQ')
