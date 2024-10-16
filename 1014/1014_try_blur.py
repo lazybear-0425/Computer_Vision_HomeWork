@@ -11,7 +11,6 @@ cv2.imshow('kernel = 5, sigmaX = 55', blur_5_55)
 cv2.imshow('kernel = 55, sigmaX = 5', blur_55_5)
 cv2.waitKey(0)
 
-
 try:
     sys.path.append(os.getcwd())
     import mytools
