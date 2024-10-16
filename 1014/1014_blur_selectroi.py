@@ -24,10 +24,3 @@ img = cv2.imread('1014/example/people.png')
 cv2.imshow('result', img)
 cv2.setMouseCallback('result', mouse_event, img)
 cv2.waitKey(0)
-
-try:
-    sys.path.append(os.getcwd())
-    import mytools
-    mytools.save_file('1014/result/hk1', [['blur+roi.png', img]])
-except Exception as e:
-    print('存檔失敗QQ，原因:', e)
