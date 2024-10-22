@@ -16,7 +16,6 @@ print('Save \033[33mthreshold.jpg\033[0m') # debug
 
 
 num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(thres, connectivity=8, ltype=None)
-
 print(f'number of labels = {num_labels}') # x、y、width、height和面积
 
 # 參考自
@@ -43,7 +42,21 @@ for i in range(h):
         if(group_num not in want_group): continue
         if group_num not in group:
             group[group_num] = []
+        if i - 1 >= 0 and i + 1 < h and j - 1 >= 0 and j + 1 < w: # 加速!
+            if labels[i][j] == labels[i - 1][j] == labels[i][j - 1] == labels[i + 1][j] == labels[i][j + 1]: continue
         group[group_num].append([j, i])
+
+contour = np.zeros((h, w, 3), dtype=np.uint8)
+for g in group:
+    for node in group[g]:
+        i = node[0]
+        j = node[1]
+        contour[j, i, 0] = 255
+        contour[j, i, 1] = 255
+        contour[j, i, 2] = 255
+contour = cv2.dilate(contour, (3, 3)) # 因為原圖太糊了QQ
+cv2.imwrite('1021/result/contour.jpg', contour)
+print('Save \033[33mcontour.jpg\033[0m') # debug
 
 group_dis = {}
 for g in group:
