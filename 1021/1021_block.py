@@ -1,6 +1,8 @@
+# 備註1：我到現在還是搞不懂是(h, w)還是(w, h)
+# 　　　 都是憑直覺寫的
+# 備註2：這邊是沒有整理的版本
 import cv2
 import numpy as np
-
 
 img = cv2.imread('1021/example/block.jpg')
 h = img.shape[0]
@@ -16,7 +18,7 @@ print('Save \033[33mthreshold.jpg\033[0m') # debug
 
 
 num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(thres, connectivity=8, ltype=None)
-print(f'number of labels = {num_labels}') # x、y、width、height和面积
+print(f'number of labels = {num_labels}') # x、y、width、height和面積
 
 # 參考自
 # https://gitcode.csdn.net/66c9b67013e4054e7e7d59c2.html?dp_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MzE3NzA3NCwiZXhwIjoxNzMwMTAyODA5LCJpYXQiOjE3Mjk0OTgwMDksInVzZXJuYW1lIjoiMjMwMV83OTAyODYwOSJ9.yk7OgQeVEITBqDDS5W3mFSkjIFLcHnew5SVTZ5647zQ&spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7Ebaidujs_baidulandingword%7Eactivity-3-127225934-blog-106023288.235%5Ev43%5Epc_blog_bottom_relevance_base1&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7Ebaidujs_baidulandingword%7Eactivity-3-127225934-blog-106023288.235%5Ev43%5Epc_blog_bottom_relevance_base1&utm_relevant_index=6
@@ -42,7 +44,7 @@ for i in range(h):
         if(group_num not in want_group): continue
         if group_num not in group:
             group[group_num] = []
-        if i - 1 >= 0 and i + 1 < h and j - 1 >= 0 and j + 1 < w: # 加速!
+        if i - 1 >= 0 and i + 1 < h and j - 1 >= 0 and j + 1 < w: # 留下輪廓 => 加速!
             if labels[i][j] == labels[i - 1][j] == labels[i][j - 1] == labels[i + 1][j] == labels[i][j + 1]: continue
         group[group_num].append([j, i])
 
@@ -51,10 +53,8 @@ for g in group:
     for node in group[g]:
         i = node[0]
         j = node[1]
-        contour[j, i, 0] = 255
-        contour[j, i, 1] = 255
-        contour[j, i, 2] = 255
-contour = cv2.dilate(contour, (3, 3)) # 因為原圖太糊了QQ
+        contour[j, i, :] = 255
+contour = cv2.dilate(contour, (5, 5)) # 因為原圖太糊了QQ
 cv2.imwrite('1021/result/contour.jpg', contour)
 print('Save \033[33mcontour.jpg\033[0m') # debug
 
@@ -165,7 +165,5 @@ print('Save \033[33mdecode.jpg\033[0m') # debug
 
 # contours, hierarchy = cv2.findContours(thres, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 # contour = cv2.drawContours(img, contours, -1, (0, 0, 255), 5)
-
-# 目標
 
 # convex -> 減少點的數量(-> 快)
