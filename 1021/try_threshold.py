@@ -1,12 +1,14 @@
 import cv2
 
 img = cv2.imread('1021/example/block.jpg')
+h = img.shape[1]
+w = img.shape[0]
+rate = 0.65
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-# thres = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 17, 2)
-_, thres = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+adaptive = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 311, 0)
+_, otsu = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
-dilate = cv2.erode(thres, kernel)
-
-cv2.imwrite('1021/result/threshold_1.jpg', dilate)
+cv2.imshow('otsu', cv2.resize(otsu, (int(h * rate), int(w * rate))))
+cv2.imshow('adaptive', cv2.resize(adaptive, (int(h * rate), int(w * rate))))
+cv2.waitKey(0)

@@ -105,7 +105,7 @@ cv2.imwrite('1021/result/find_coner.jpg', find_coner)
 print('Save \033[33mfind_coner.jpg\033[0m') # debug
 
 def erode_second(img):
-    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (3, 3))
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS, (5, 5))
     erode = cv2.erode(img, kernel)
     return erode
 
@@ -126,7 +126,7 @@ def convert(pos, g):
     one_or_zero = np.zeros((6, 6))
     for i in range(w):
         for j in range(h):
-            if persp[i][j] == 255: # 因為之前有黑白顛倒
+            if persp[i][j] == 0: # 因為之前有黑白顛倒
                 one_or_zero[(i // 8)][(j // 8)] += 1
     one_or_zero = one_or_zero / 64
 
@@ -137,7 +137,7 @@ def convert(pos, g):
             num *= 2
             if one_or_zero[i][j] >= 0.5: num += 1; binary += '1'
             else: num += 0; binary += '0'
-    cv2.imwrite(f'1021/result/blocks/{g}.jpg', persp)
+    cv2.imwrite(f'1021/result/blocks/{g}.jpg', cv2.bitwise_not(persp))
     return num, binary
 print('Save \033[33mblocks/g.jpg\033[0m') # debug
 
