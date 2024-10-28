@@ -165,8 +165,8 @@ if __name__ == '__main__':
     h = img.shape[0]
     w = img.shape[1]
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # 用 adaptive threshold 效果不好
-    # thres = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 7, 2)
+    # 也能用adaptive，blocksize要調大
+    # thres = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 301, 2)
     _, thres = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     thres = cv2.erode(thres, kernel)
