@@ -18,8 +18,8 @@ def cal_angle(v1, v2):
     return angle
 
 def tkinter_word(root, text):
-    myLabel = tk.Label(root, text=text)
-    myLabel.pack()
+    myLabel = tk.Label(root, text=text, font=('Arial',10,'bold'))
+    myLabel.pack(padx=10)
     root.update()
 
 def show_word(img, text):
@@ -54,7 +54,7 @@ def reset_record(record):
     record = {'ok':0, 'zero':0, 'one':0, 'two':0, 'three':0, 'four':0, 'five':0}
 
 def cal_finger(finger, state, record, threshold):
-    if state == 'ok' and (finger[2] < thres_angle and finger[3] < thres_angle and finger[4] < thres_angle) and (finger[1] >= thres_angle and finger[0] >= thres_angle * 0.6):
+    if state == 'ok' and (finger[2] < thres_angle and finger[3] < thres_angle and finger[4] < thres_angle) and (finger[1] >= thres_angle and finger[0] >= thres_angle * 0.4):
         record['ok'] += 1
         if record['ok'] >= threshold: return True
     elif state == 'zero' and (finger[0] >= thres_angle and finger[1] >= thres_angle and finger[2] >= thres_angle and finger[3] >= thres_angle and finger[4] >= thres_angle):
@@ -148,10 +148,10 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
                     snack_position = [randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)]
                     for i in range(10 - game_level):
                         fruit.append([randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)])
-                    tk.Label(root, textvariable=score_strvar).pack()
+                    tk.Label(root, textvariable=score_strvar, font=('Arial',20,'bold')).pack()
         elif start_game >= 2 and start_game <= 4: # 倒數計時 3, 2, 1
-            cv2.putText(img, f'{5 - start_game}', (img.shape[1] // 2, img.shape[0] // 2), cv2.FONT_HERSHEY_COMPLEX,
-                        2, (0, 100, 255), 4)
+            cv2.putText(img, f'{5 - start_game}', (img.shape[1] // 2 - 80, img.shape[0] // 2 + 100), cv2.FONT_HERSHEY_COMPLEX,
+                        8, (0, 100, 255), 18)
             counter += 1
             if counter == 30: # 可以手動調時間
                 start_game += 1
