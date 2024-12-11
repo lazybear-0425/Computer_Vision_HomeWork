@@ -125,8 +125,9 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
         finger = cal_finger_angle(hand_record) # 計算手指彎曲程度
         #=======================try==============================
         if hand_record:
+            # 去計算bound box -> 才能計算深度
             real_hand_record = np.array(hand_record, dtype=np.float32) * np.array([img.shape[1], img.shape[0]])
-            boundBox = cv2.boundingRect(real_hand_record.astype(np.float32))
+            boundBox = cv2.boundingRect(real_hand_record.astype(np.float32)) # shape: (4, )
             [x, y, w, h] = boundBox
             cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 255), 3)
         #=======================try==============================
@@ -136,7 +137,7 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
                 start_game = 1
                 tkinter_word(root, 'Choose Game Level! (1 - 5)')
                 reset_record(record)
-        elif start_game == 1:
+        elif start_game == 1: # 判斷遊玩等級
             if finger:
                 if cal_finger(finger, 'one', record, 20):
                     start_game = 2; game_level = 1
@@ -163,17 +164,19 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
             if counter == 30: # 可以手動調時間
                 start_game += 1
                 counter = 0
-        elif start_game == 5:
+        elif start_game == 5: # start game
             score_strvar.set(f'Score: {score}, your life: {life}'); root.update()
             cv2.circle(img, (snack_position[1], snack_position[0]), 14 - game_level, (0, 255, 0), -1)
             counter += 1
-            for i in range(len(fruit)):
+            # =============== 更新水果位置 ===================================
+            for i in range(len(fruit)): 
                 cv2.circle(img, (fruit[i][1], fruit[i][0]), 5, (0, 0, 255), -1)
                 if counter % ((i + 1) * 100) == 0:
                     fruit[i] = [randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)]
             if counter % (100 * (len(fruit) + 1)) == 0:
                 counter = 0
-            if finger:
+            # ===============================================================
+            if finger: # 更新目前手指方向座標，如果沒有就不更新(使用原方向)
                 (x1, y1) = ((hand_record[8][0] - hand_record[7][0]), 
                                 (hand_record[8][1] - hand_record[7][1]))
             snack_position = direct_snack(snack_position, x1, y1, game_level)
@@ -184,10 +187,10 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
                     continue
                 else:
                     snack_position = [snack_position[0] % img.shape[0], snack_position[1] % img.shape[1]]
-            for i in range(len(fruit)):
+            for i in range(len(fruit)): # 檢查角色是否碰撞到獎勵
                 if not isExtrapolation(snack_position, 14 - game_level, fruit[i], 5):
-                    score += 1
-                    fruit[i] = [randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)]
+                    score += 1 # 是 -> 分數加一
+                    fruit[i] = [randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)] # 重新變換位置
         else:
             print(f'Game Over, your score: {score}')
             exit()
