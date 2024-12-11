@@ -123,7 +123,13 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
             
         hand_record = detect_hand(img, hands) # 獲得21個點
         finger = cal_finger_angle(hand_record) # 計算手指彎曲程度
-        
+        #=======================try==============================
+        if hand_record:
+            real_hand_record = np.array(hand_record, dtype=np.float32) * np.array([img.shape[1], img.shape[0]])
+            boundBox = cv2.boundingRect(real_hand_record.astype(np.float32))
+            [x, y, w, h] = boundBox
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 255), 3)
+        #=======================try==============================
         if start_game == 0:
             # 因為OK的拇指不明顯
             if finger and cal_finger(finger, 'ok', record, 20):
@@ -145,13 +151,14 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
                 if game_level != 0:
                     tkinter_word(root, f'You Choose Level {game_level}')
                     life = 6 - game_level
-                    snack_position = [randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)]
+                    snack_position = [randint(img.shape[0] // 4, img.shape[0] // 4 * 3), randint(img.shape[1] // 4, img.shape[1] // 4 * 3)]
                     for i in range(10 - game_level):
                         fruit.append([randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)])
                     tk.Label(root, textvariable=score_strvar, font=('Arial',20,'bold')).pack()
         elif start_game >= 2 and start_game <= 4: # 倒數計時 3, 2, 1
             cv2.putText(img, f'{5 - start_game}', (img.shape[1] // 2 - 80, img.shape[0] // 2 + 100), cv2.FONT_HERSHEY_COMPLEX,
                         8, (0, 100, 255), 18)
+            cv2.circle(img, (snack_position[1], snack_position[0]), 14 - game_level, (0, 255, 0), -1)
             counter += 1
             if counter == 30: # 可以手動調時間
                 start_game += 1
@@ -159,9 +166,13 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
         elif start_game == 5:
             score_strvar.set(f'Score: {score}, your life: {life}'); root.update()
             cv2.circle(img, (snack_position[1], snack_position[0]), 14 - game_level, (0, 255, 0), -1)
-            for node in fruit:
-                cv2.circle(img, (node[1], node[0]), 5, (0, 0, 255), -1)
-                
+            counter += 1
+            for i in range(len(fruit)):
+                cv2.circle(img, (fruit[i][1], fruit[i][0]), 5, (0, 0, 255), -1)
+                if counter % ((i + 1) * 100) == 0:
+                    fruit[i] = [randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)]
+            if counter % (100 * (len(fruit) + 1)) == 0:
+                counter = 0
             if finger:
                 (x1, y1) = ((hand_record[8][0] - hand_record[7][0]), 
                                 (hand_record[8][1] - hand_record[7][1]))
@@ -178,7 +189,7 @@ with mp_hand.Hands(max_num_hands=1, min_detection_confidence=0.6) as hands:
                     score += 1
                     fruit[i] = [randint(30, img.shape[0] - 30), randint(30, img.shape[1] - 30)]
         else:
-            print('Game Over')
+            print(f'Game Over, your score: {score}')
             exit()
         
         cv2.imshow('camera', img)
